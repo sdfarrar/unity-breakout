@@ -10,12 +10,10 @@ public class Ball : MonoBehaviour {
 	private Rigidbody2D rb;
 	private bool launched;
 
-	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody2D>();
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		velocity = rb.velocity;
 	}
@@ -33,5 +31,12 @@ public class Ball : MonoBehaviour {
 		if(collider.tag!="Killzone"){ return; }
 
 		Destroy(this.gameObject);
+	}
+
+	private void OnCollisionEnter2D(Collision2D collision){
+		if(collision.gameObject.tag=="Brick"){
+			collision.gameObject.GetComponent<Brick>().Damage();
+		}
+
 	}
 }

@@ -6,7 +6,6 @@ public class Stage : MonoBehaviour {
 
 	private Bounds bounds;
 
-	// Use this for initialization
 	void Start () {
 		ComputeBounds();
 	}
