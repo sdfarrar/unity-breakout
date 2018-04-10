@@ -37,6 +37,17 @@ public class Ball : MonoBehaviour {
 		if(collision.gameObject.tag=="Brick"){
 			collision.gameObject.GetComponent<Brick>().Damage();
 		}
+	}
 
+	private void OnCollisionExit2D(Collision2D collision){
+		Debug.Log("Exit");
+		if(rb.velocity.x == 0f){  //TODO fix, x is near 0 != 0
+			Debug.Log("nudging x");
+			rb.AddForce(new Vector3(Random.Range(-1f, 1f), 0f, 0f));
+		}
+		if(rb.velocity.y == 0f){ //TODO fix, y is near 0 != 0
+			Debug.Log("nudging y");
+			rb.AddForce(new Vector3(0f, Random.Range(-1f, 1f), 0f));
+		}
 	}
 }
