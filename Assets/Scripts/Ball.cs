@@ -40,14 +40,15 @@ public class Ball : MonoBehaviour {
 	}
 
 	private void OnCollisionExit2D(Collision2D collision){
-		Debug.Log("Exit");
-		if(rb.velocity.x == 0f){  //TODO fix, x is near 0 != 0
+		if(Mathf.Abs(rb.velocity.x) - 0.001f <= 0f){
 			Debug.Log("nudging x");
-			rb.AddForce(new Vector3(Random.Range(-1f, 1f), 0f, 0f));
+			rb.AddForce(new Vector3(Random.Range(-1.5f, 1.5f), 0f, 0f));
 		}
-		if(rb.velocity.y == 0f){ //TODO fix, y is near 0 != 0
+		if(Mathf.Abs(rb.velocity.y) - 0.001f <= 0f){
 			Debug.Log("nudging y");
-			rb.AddForce(new Vector3(0f, Random.Range(-1f, 1f), 0f));
+			rb.AddForce(new Vector3(0f, Random.Range(-1.5f, 1.5f), 0f));
 		}
+		// TODO add a max speed param and check against it before increasing velocity
+		rb.velocity *= 1.1f;
 	}
 }
