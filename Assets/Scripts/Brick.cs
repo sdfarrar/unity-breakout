@@ -7,11 +7,18 @@ public class Brick : MonoBehaviour {
 
 	public int health = 1;
 
+	private static BrickManager manager;
+
 	public void Damage(){
 		health--;
 		if(health<=0){
-			Destroy(this.gameObject);
+			if(Brick.manager==null){ Destroy(this.gameObject); return; } // this is bad
+			Brick.manager.DestroyBrick(this);
 		}
+	}
+
+	public static void SetBrickManager(BrickManager manager){
+		Brick.manager = manager;
 	}
 
 }
