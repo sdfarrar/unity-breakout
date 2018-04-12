@@ -6,6 +6,7 @@ public class Ball : MonoBehaviour {
 
 	public Vector2 launchSpeed = new Vector2(1.5f, 1.5f);
 	public Vector3 velocity;
+	public Paddle paddle;
 
 	private Rigidbody2D rb;
 	private bool launched;
@@ -29,8 +30,12 @@ public class Ball : MonoBehaviour {
 
 	private void OnTriggerEnter2D(Collider2D collider){
 		if(collider.tag!="Killzone"){ return; }
-
-		Destroy(this.gameObject);
+		if(paddle!=null){
+			paddle.ResetBall();
+			launched = false;
+		}else{
+			Destroy(this.gameObject); // another shouldnt happen zone
+		}
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision){

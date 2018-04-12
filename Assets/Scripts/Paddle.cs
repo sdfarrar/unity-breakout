@@ -6,26 +6,22 @@ public class Paddle : MonoBehaviour {
 	public GameObject ballPrefab;
 	public float speed = 5f;
 
-	private Bounds confines;
 	private float leftBound;
 	private float rightBound;
 	private BoxCollider2D box;
 	private Ball ball;
 
-	void Start() {
+	private void Start() {
 		box = GetComponent<BoxCollider2D>();
 		ball = GetComponentInChildren<Ball>();
-		if(ball==null){
-			Vector3 ballPosition = transform.position + Vector3.up*0.335f;
-			ball = Instantiate(ballPrefab, ballPosition, Quaternion.identity, transform).GetComponent<Ball>();
-		}
+		InitializeBall(true);
+
 		Stage s = stage.GetComponent<Stage>();
-		confines = s.GetBounds();
 		leftBound = s.GetLeftBound();
 		rightBound = s.GetRightBound();
 	}
 	
-	void Update() {
+	private void Update() {
 		Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, 0);
 		transform.position += input * Time.deltaTime * speed;
 
@@ -41,6 +37,23 @@ public class Paddle : MonoBehaviour {
 
 		if(Input.GetKeyDown(KeyCode.Space)){
 			ball.Launch(GetLaunchVector());
+		}
+	}
+
+	public void ResetBall(){
+		// Check lives, if 0, end game
+		InitializeBall(false);
+	}
+
+	private void InitializeBall(bool instantiateBall){
+		Vector3 ballPosition = transform.position + Vector3.up*0.335f;
+		if(instantiateBall){
+			ball = Instantiate(ballPrefab, ballPosition, Quaternion.identity, transform).GetComponent<Ball>();
+			ball.paddle = this;
+		}else{
+			ball.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+			ball.transform.parent = transform;
+			ball.transform.position = ballPosition;
 		}
 	}
 
