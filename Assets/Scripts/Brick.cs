@@ -6,15 +6,30 @@ using UnityEngine;
 public class Brick : MonoBehaviour {
 
 	public int health = 1;
+	public bool indestructible = false;
+
+	private SpriteRenderer spriteRenderer;
+	private bool updateColor = false;
 
 	private static BrickManager manager;
 
+	private void Awake(){
+		spriteRenderer = GetComponent<SpriteRenderer>();
+	}
+
+	private void Update(){
+	}
+
 	public void Damage(){
-		health--;
-		if(health<=0){
-			if(Brick.manager==null){ Destroy(this.gameObject); return; } // this is bad
-			Brick.manager.DestroyBrick(this);
-		}
+		if(indestructible){ return; }
+		if(--health>0){ return; }
+
+		if(Brick.manager==null){ Destroy(this.gameObject); return; } // this is bad
+		Brick.manager.DestroyBrick(this);
+	}
+
+	public void SetColor(Color c){
+		spriteRenderer.color = c;
 	}
 
 	public static void SetBrickManager(BrickManager manager){

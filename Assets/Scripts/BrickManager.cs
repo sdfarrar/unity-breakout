@@ -6,6 +6,11 @@ public class BrickManager : MonoBehaviour {
 
 	public GameObject brickPrefab;
 
+	public BrickTemplate weak;
+	public BrickTemplate average;
+	public BrickTemplate strong;
+	public BrickTemplate indestructible;
+
 	private GameObject bricksParent;
 	private List<GameObject> bricks;
 
@@ -14,6 +19,7 @@ public class BrickManager : MonoBehaviour {
 
 	void Start () {
 		map = "##";//simple map
+		map = "#123";//multiple brick types
 		Brick.SetBrickManager(this);
 
 		bricksParent = GameObject.Find("Bricks");
@@ -52,15 +58,38 @@ public class BrickManager : MonoBehaviour {
 		Vector2 position = Vector2.zero;
 		for(int i=0; i<map.Length; ++i){
 			char c = map[i];
-			if(c=='#'){
-				GameObject brick = Instantiate(brickPrefab, position, Quaternion.identity, bricksParent.transform);
-				bricks.Add(brick);
+			GameObject brick;
+			switch(c){
+				case '#':
+					InstantiateBrick(position, Quaternion.identity, indestructible);
+				break;
+				case '1':
+					brick = InstantiateBrick(position, Quaternion.identity, weak);
+					bricks.Add(brick);
+				break;
+				case '2':
+					brick = InstantiateBrick(position, Quaternion.identity, average);
+					bricks.Add(brick);
+				break;
+				case '3':
+					brick = InstantiateBrick(position, Quaternion.identity, strong);
+					bricks.Add(brick);
+				break;
 			}
 			position.x += width;
 			if(c=='\n'){
 				position = new Vector2(0f, position.y - height);
 			}
 		}
+	}
+
+	private GameObject InstantiateBrick(Vector3 position, Quaternion rotation, BrickTemplate template){
+		GameObject go = Instantiate(brickPrefab, position, rotation, bricksParent.transform);
+		Brick brick = go.GetComponent<Brick>();
+		brick.indestructible = template.indestructible;
+		brick.health = template.health;
+		brick.SetColor(template.color);
+		return go;
 	}
 
 }
