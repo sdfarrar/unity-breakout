@@ -6,12 +6,16 @@ public class Paddle : MonoBehaviour {
 	public GameObject ballPrefab;
 	public float speed = 5f;
 
+	private Animator animator;
+
 	private float leftBound;
 	private float rightBound;
 	private BoxCollider2D box;
 	private Ball ball;
 
+
 	private void Start() {
+		animator = GetComponentInChildren<Animator>();
 		box = GetComponent<BoxCollider2D>();
 		ball = GetComponentInChildren<Ball>();
 		InitializeBall(true);
@@ -69,5 +73,12 @@ public class Paddle : MonoBehaviour {
 	private void OnDrawGizmosSelected(){
 		Gizmos.color = Color.yellow;
 		Gizmos.DrawLine(transform.position, stage.transform.position);
+	}
+
+	private void OnCollisionEnter2D(Collision2D collision){
+		if(collision.gameObject==ball.gameObject){
+			animator.Play("bouncy", -1, 0);
+		}
+
 	}
 }
