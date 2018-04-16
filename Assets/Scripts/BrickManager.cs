@@ -6,6 +6,8 @@ public class BrickManager : MonoBehaviour {
 
 	public GameObject brickPrefab;
 
+	public Vector3 spawnPositionOffset = Vector3.zero;
+
 	public BrickTemplate weak;
 	public BrickTemplate average;
 	public BrickTemplate strong;
@@ -13,11 +15,14 @@ public class BrickManager : MonoBehaviour {
 
 	private GameObject bricksParent;
 	private List<GameObject> bricks;
+	private GameManager gameManager;
 
 	private string map = "#### #### #### ####\n"
 						+"   ###  ###  ###";
 
 	void Start () {
+		gameManager = GameObject.FindObjectOfType<GameManager>();
+
 		map = "##";//simple map
 		map = "#123";//multiple brick types
 		Brick.SetBrickManager(this);
@@ -30,6 +35,7 @@ public class BrickManager : MonoBehaviour {
 
 		GenerateLevel();
 		bricksParent.transform.position = new Vector2(-8.5f, 4.5f);
+		gameManager.OnLevelLoaded();
 	}
 	
 	void LateUpdate () {
@@ -61,18 +67,18 @@ public class BrickManager : MonoBehaviour {
 			GameObject brick;
 			switch(c){
 				case '#':
-					InstantiateBrick(position, Quaternion.identity, indestructible);
+					InstantiateBrickWithEasing(position, Quaternion.identity, indestructible);
 				break;
 				case '1':
-					brick = InstantiateBrick(position, Quaternion.identity, weak);
+					brick = InstantiateBrickWithEasing(position, Quaternion.identity, weak);
 					bricks.Add(brick);
 				break;
 				case '2':
-					brick = InstantiateBrick(position, Quaternion.identity, average);
+					brick = InstantiateBrickWithEasing(position, Quaternion.identity, average);
 					bricks.Add(brick);
 				break;
 				case '3':
-					brick = InstantiateBrick(position, Quaternion.identity, strong);
+					brick = InstantiateBrickWithEasing(position, Quaternion.identity, strong);
 					bricks.Add(brick);
 				break;
 			}
@@ -84,11 +90,21 @@ public class BrickManager : MonoBehaviour {
 	}
 
 	private GameObject InstantiateBrick(Vector3 position, Quaternion rotation, BrickTemplate template){
-		GameObject go = Instantiate(brickPrefab, position, rotation, bricksParent.transform);
+		GameObject go = Instantiate(brickPrefab, bricksParent.transform.position, rotation, bricksParent.transform);
 		Brick brick = go.GetComponent<Brick>();
+		brick.transform.position = position;
 		brick.indestructible = template.indestructible;
 		brick.health = template.health;
 		brick.SetColor(template.color);
+		return go;
+	}
+
+	private GameObject InstantiateBrickWithEasing(Vector3 position, Quaternion rotation, BrickTemplate template){
+		Vector3 startPosition = position + spawnPositionOffset;
+		GameObject go = InstantiateBrick(startPosition, rotation, template);
+		EasePosition easing = go.AddComponent<EasePosition>();
+		easing.endPosition = position;
+		easing.duration = 0.75f;
 		return go;
 	}
 

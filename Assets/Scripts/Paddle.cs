@@ -5,6 +5,7 @@ public class Paddle : MonoBehaviour {
 	public Transform stage;
 	public GameObject ballPrefab;
 	public float speed = 5f;
+	public bool hasControl;
 
 	private Animator animator;
 
@@ -26,6 +27,12 @@ public class Paddle : MonoBehaviour {
 	}
 	
 	private void Update() {
+		if(hasControl){
+			HandleInput();
+		}
+	}
+
+	private void HandleInput(){
 		Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, 0);
 		transform.position += input * Time.deltaTime * speed;
 
@@ -42,6 +49,7 @@ public class Paddle : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.Space)){
 			ball.Launch(GetLaunchVector());
 		}
+
 	}
 
 	public void ResetBall(){
