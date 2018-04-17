@@ -8,6 +8,8 @@ public class EasePosition : MonoBehaviour {
 	public Vector3 endPosition = Vector3.zero;
 	public float duration = 1f;
 
+	public UnityEngine.Events.UnityEvent OnEasingFinished = new UnityEngine.Events.UnityEvent();
+
 	private float elapsed = 0f;
 	private bool done = false;
 
@@ -22,6 +24,7 @@ public class EasePosition : MonoBehaviour {
 
 		if(transform.localPosition.y==endPosition.y){
 			this.enabled = false;//disable this script when we're done with our easing
+			OnEasingFinished.Invoke();
 		}
 
 	}

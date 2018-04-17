@@ -13,49 +13,51 @@ public class BrickManager : MonoBehaviour {
 	public BrickTemplate strong;
 	public BrickTemplate indestructible;
 
-	private GameObject bricksParent;
-	private List<GameObject> bricks;
-	private GameManager gameManager;
+	private LevelData levelData;
 
-	private string map = "#### #### #### ####\n"
-						+"   ###  ###  ###";
+	private string map = "##11 1111 1111 1111\n"
+						+"   111  111  111";
 
 	void Start () {
-		gameManager = GameObject.FindObjectOfType<GameManager>();
+		levelData.gameManager = GameObject.FindObjectOfType<GameManager>();
 
-		map = "##";//simple map
-		map = "#123";//multiple brick types
+		//map = "##";//simple map
+		//map = "#123";//multiple brick types
 		Brick.SetBrickManager(this);
 
-		bricksParent = GameObject.Find("Bricks");
-		if(bricksParent==null){
-			bricksParent = new GameObject();
-			bricksParent.name = "Bricks";
+		levelData.bricksParent = GameObject.Find("Bricks");
+
+		if(levelData.bricksParent==null){
+			levelData.bricksParent = new GameObject();
+			levelData.bricksParent.name = "Bricks";
 		}
 
 		GenerateLevel();
-		bricksParent.transform.position = new Vector2(-8.5f, 4.5f);
-		gameManager.OnLevelLoaded();
+
+		levelData.bricksParent.transform.position = new Vector2(-8.5f, 4.5f);
 	}
 	
-	void LateUpdate () {
-		if(bricks.Count<=0){
-#if UNITY_EDITOR
-			UnityEditor.EditorApplication.isPlaying = false; // TODO remove when we load new levels
-#else
-			Application.Quit();
-#endif
-		}
+
+	public bool HasBricksLeft(){
+		return levelData.bricks.Count>0;
 	}
 
 	public void DestroyBrick(Brick brick){
-		if(bricks.Remove(brick.gameObject)){
+		if(levelData.bricks.Remove(brick.gameObject)){
 			Destroy(brick.gameObject);
 		}
 	}
 
+	// Callback for bricks with easing
+	public void BrickInPosition(){
+		levelData.bricksReady++;
+		if(IsLevelReady()){
+			levelData.gameManager.OnLevelLoaded();
+		}
+	}
+
 	private void GenerateLevel(){
-		bricks = new List<GameObject>();
+		List<GameObject> bricks = new List<GameObject>();
 
 		BoxCollider2D box = brickPrefab.GetComponent<BoxCollider2D>();
 		float width = box.size.x * box.transform.localScale.x;
@@ -68,6 +70,7 @@ public class BrickManager : MonoBehaviour {
 			switch(c){
 				case '#':
 					InstantiateBrickWithEasing(position, Quaternion.identity, indestructible);
+					levelData.indestructibleCount++;
 				break;
 				case '1':
 					brick = InstantiateBrickWithEasing(position, Quaternion.identity, weak);
@@ -87,25 +90,47 @@ public class BrickManager : MonoBehaviour {
 				position = new Vector2(0f, position.y - height);
 			}
 		}
+		levelData.bricks = bricks;
 	}
 
-	private GameObject InstantiateBrick(Vector3 position, Quaternion rotation, BrickTemplate template){
-		GameObject go = Instantiate(brickPrefab, bricksParent.transform.position, rotation, bricksParent.transform);
+	private Brick InstantiateBrick(Vector3 position, Quaternion rotation, BrickTemplate template){
+		GameObject go = Instantiate(brickPrefab, levelData.bricksParent.transform.position, rotation, levelData.bricksParent.transform);
 		Brick brick = go.GetComponent<Brick>();
 		brick.transform.position = position;
 		brick.indestructible = template.indestructible;
 		brick.health = template.health;
 		brick.SetColor(template.color);
-		return go;
+		return brick;
 	}
 
 	private GameObject InstantiateBrickWithEasing(Vector3 position, Quaternion rotation, BrickTemplate template){
 		Vector3 startPosition = position + spawnPositionOffset;
-		GameObject go = InstantiateBrick(startPosition, rotation, template);
-		EasePosition easing = go.AddComponent<EasePosition>();
+		Brick brick = InstantiateBrick(startPosition, rotation, template);
+		EasePosition easing = brick.gameObject.AddComponent<EasePosition>();
 		easing.endPosition = position;
-		easing.duration = 0.75f;
-		return go;
+		easing.duration = Random.Range(0.25f, 0.75f);
+		easing.OnEasingFinished.AddListener(brick.IsReady);
+		return brick.gameObject;
 	}
 
+	private bool IsLevelReady(){
+		return (levelData.bricksReady-levelData.indestructibleCount)>=levelData.bricks.Count;
+	}
+
+
+	private struct LevelData {
+		public GameObject bricksParent;
+		public List<GameObject> bricks;
+		public GameManager gameManager;
+		public int bricksReady;
+		public int indestructibleCount;
+
+		LevelData(GameObject bricksParent, List<GameObject> bricks, GameManager gameManager){
+			this.bricksParent = bricksParent;
+			this.bricks = bricks;
+			this.gameManager = gameManager;
+			this.bricksReady = this.indestructibleCount = 0;
+		}
+
+	}
 }

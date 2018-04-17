@@ -5,21 +5,29 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
 
 	public GameObject player;
+	public GameObject brickManager;
 
-	private Paddle paddle;
+	private Paddle _paddle;
+	private BrickManager _brickManager;
 
-	// Use this for initialization
 	void Start () {
-		paddle = player.GetComponent<Paddle>();
-		paddle.hasControl = false;
+		_paddle = player.GetComponent<Paddle>();
+		_paddle.hasControl = false;
+		_brickManager = brickManager.GetComponent<BrickManager>();
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		
+	void LateUpdate () {
+		if(!_brickManager.HasBricksLeft()){
+			Debug.Log("No bricks left");
+#if UNITY_EDITOR
+			UnityEditor.EditorApplication.isPlaying = false; // TODO remove when we load new levels
+#else
+			Application.Quit();
+#endif
+		}
 	}
 
 	public void OnLevelLoaded(){
-		paddle.hasControl = true;
+		_paddle.hasControl = true;
 	}
 }

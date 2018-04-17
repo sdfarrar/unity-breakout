@@ -32,6 +32,10 @@ public class Brick : MonoBehaviour {
 		spriteRenderer.color = c;
 	}
 
+	public void IsReady(){
+		manager.BrickInPosition();
+	}
+
 	public static void SetBrickManager(BrickManager manager){
 		Brick.manager = manager;
 	}
