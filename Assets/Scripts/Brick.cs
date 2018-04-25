@@ -21,10 +21,11 @@ public class Brick : MonoBehaviour {
 	}
 
 	public void Damage(){
-		if(indestructible){ return; }
-		if(--health>0){ return; }
+		if(indestructible){ AudioManager.Instance.Play("WallHit"); return; }
+		if(--health>0){ AudioManager.Instance.Play("BrickHit"); return; }
 
 		if(Brick.manager==null){ Destroy(this.gameObject); return; } // this is bad
+		AudioManager.Instance.Play("BrickDie");
 		Brick.manager.DestroyBrick(this);
 	}
 

@@ -53,7 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brickPrefab: {fileID: 1975881744458060, guid: dbee816e2a65f654ea9b067328d3749b,
     type: 2}
-  spawnPositionOffset: {x: 0, y: 0, z: 0}
+  spawnPositionOffset: {x: 0, y: 20, z: 0}
   weak: {fileID: 11400000, guid: 932f353d135a22e4cbc60a8d1061ad52, type: 2}
   average: {fileID: 11400000, guid: e2ea6cb881e07464ab70118610f9da6f, type: 2}
   strong: {fileID: 11400000, guid: 2f70362d76a237e47aeda147138550f3, type: 2}

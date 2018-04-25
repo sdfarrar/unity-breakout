@@ -91,6 +91,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   launchSpeed: {x: 1.5, y: 1.5}
   velocity: {x: 0, y: 0, z: 0}
+  paddle: {fileID: 0}
 --- !u!212 &212533767128119814
 SpriteRenderer:
   m_ObjectHideFlags: 1

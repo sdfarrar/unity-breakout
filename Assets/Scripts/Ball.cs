@@ -39,18 +39,18 @@ public class Ball : MonoBehaviour {
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision){
-		if(collision.gameObject.tag=="Brick"){
-			collision.gameObject.GetComponent<Brick>().Damage();
+		switch(collision.gameObject.tag){
+			case "Brick": collision.gameObject.GetComponent<Brick>().Damage(); break;
+			case "Player": AudioManager.Instance.Play("PaddleHit"); break;
+			case "Wall": AudioManager.Instance.Play("WallHit"); break;
 		}
 	}
 
 	private void OnCollisionExit2D(Collision2D collision){
 		if(Mathf.Abs(rb.velocity.x) - 0.001f <= 0f){
-			Debug.Log("nudging x");
 			rb.AddForce(new Vector3(Random.Range(-1.5f, 1.5f), 0f, 0f));
 		}
 		if(Mathf.Abs(rb.velocity.y) - 0.001f <= 0f){
-			Debug.Log("nudging y");
 			rb.AddForce(new Vector3(0f, Random.Range(-1.5f, 1.5f), 0f));
 		}
 		// TODO add a max speed param and check against it before increasing velocity
