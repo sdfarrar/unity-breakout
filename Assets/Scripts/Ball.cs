@@ -54,7 +54,7 @@ public class Ball : MonoBehaviour {
 		if(Mathf.Abs(rb.velocity.y) - 0.001f <= 0f){
 			rb.AddForce(new Vector3(0f, Random.Range(-1.5f, 1.5f), 0f));
 		}
-		// TODO add a max speed param and check against it before increasing velocity
+
 		Vector2 newVelocity = rb.velocity * 1.05f;
 		Debug.Log("vel: " + newVelocity.sqrMagnitude + " | max: " + maxSpeed*maxSpeed);
 		if(newVelocity.sqrMagnitude < maxSpeed*maxSpeed){
