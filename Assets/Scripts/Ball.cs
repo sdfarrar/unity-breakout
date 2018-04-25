@@ -7,6 +7,7 @@ public class Ball : MonoBehaviour {
 	public Vector2 launchSpeed = new Vector2(1.5f, 1.5f);
 	public Vector3 velocity;
 	public Paddle paddle;
+	public float maxSpeed = 3f;
 
 	private Rigidbody2D rb;
 	private bool launched;
@@ -54,6 +55,11 @@ public class Ball : MonoBehaviour {
 			rb.AddForce(new Vector3(0f, Random.Range(-1.5f, 1.5f), 0f));
 		}
 		// TODO add a max speed param and check against it before increasing velocity
-		rb.velocity *= 1.1f;
+		Vector2 newVelocity = rb.velocity * 1.05f;
+		Debug.Log("vel: " + newVelocity.sqrMagnitude + " | max: " + maxSpeed*maxSpeed);
+		if(newVelocity.sqrMagnitude < maxSpeed*maxSpeed){
+			rb.velocity *= 1.05f;
+		}
+		
 	}
 }
